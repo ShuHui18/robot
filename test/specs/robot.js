@@ -5,7 +5,7 @@ import { expect } from 'chai';
 import Chance from 'chance';
 import FACE_TYPES from '../../src/faceTypes';
 import CONFIG from '../../src/config';
-import executeInput, { place } from '../../src/robot';
+import executeInput, { place, move } from '../../src/robot';
 
 const MIN_TEST_TIMES = 100;
 
@@ -54,8 +54,7 @@ describe('robot', () => {
         const validX = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 1 });
         const validY = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 1 });
         const validFace = chance.pickone(_.map(FACE_TYPES, (name, value) => value));
-        const result = place(previousState, validX, validY, validFace);
-        expect(result).to.eql({ x: validX, y: validY, face: validFace });
+        expect(place(previousState, validX, validY, validFace)).to.eql({ x: validX, y: validY, face: validFace });
         expect(previousState).to.eql({ x: 0, y: 0, face: FACE_TYPES.NORTH });
       }
     });
@@ -89,6 +88,62 @@ describe('robot', () => {
       expect(place(previousState, validX, validY, '')).to.eql(previousState);
       expect(place(previousState, validX, validY, null)).to.eql(previousState);
       expect(expect(place(previousState, validX, validY, undefined)).to.eql(previousState));
+    });
+  });
+
+  describe('move', () => {
+
+    it('should +1 on Y when face on North', () => {
+      for(let i = 0; i < MIN_TEST_TIMES; i++) {
+        const validX = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 1 });
+        const validY = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 2 });
+        const previousState = { x: validX, y: validY, face: FACE_TYPES.NORTH };
+        expect(move(previousState)).to.eql({ x: validX, y: validY + 1, face: FACE_TYPES.NORTH });
+      }
+    });
+
+    it('should +1 on X when face on East', () => {
+      for(let i = 0; i < MIN_TEST_TIMES; i++) {
+        const validX = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 2 });
+        const validY = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 1 });
+        const previousState = { x: validX, y: validY, face: FACE_TYPES.EAST };
+        expect(move(previousState)).to.eql({ x: validX + 1, y: validY, face: FACE_TYPES.EAST });
+      }
+    });
+
+    it('should -1 on Y when face on South', () => {
+      for(let i = 0; i < MIN_TEST_TIMES; i++) {
+        const validX = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 1 });
+        const validY = chance.integer({ min: 0 + 1, max: CONFIG.TABLE_SIZE - 1 });
+        const previousState = { x: validX, y: validY, face: FACE_TYPES.SOUTH };
+        expect(move(previousState)).to.eql({ x: validX, y: validY - 1, face: FACE_TYPES.SOUTH });
+      }
+    });
+
+    it('should -1 on X when face on West', () => {
+      for(let i = 0; i < MIN_TEST_TIMES; i++) {
+        const validX = chance.integer({ min: 0 + 1, max: CONFIG.TABLE_SIZE - 1 });
+        const validY = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 1 });
+        const previousState = { x: validX, y: validY, face: FACE_TYPES.WEST };
+        expect(move(previousState)).to.eql({ x: validX - 1, y: validY, face: FACE_TYPES.WEST });
+      }
+    });
+
+    it('should not move outside of the table ', () => {
+      const validX = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 1 });
+      const validY = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 1 });
+
+      expect(move({ x: validX, y: CONFIG.TABLE_SIZE - 1, face: FACE_TYPES.NORTH }))
+        .to.eql({ x: validX, y: CONFIG.TABLE_SIZE - 1, face: FACE_TYPES.NORTH });
+
+      expect(move({ x: validX, y: 0, face: FACE_TYPES.SOUTH }))
+        .to.eql({ x: validX, y: 0, face: FACE_TYPES.SOUTH });
+
+      expect(move({ x: CONFIG.TABLE_SIZE - 1, y: validY, face: FACE_TYPES.EAST }))
+        .to.eql({ x: CONFIG.TABLE_SIZE - 1, y: validY, face: FACE_TYPES.EAST });
+
+      expect(move({ x: 0, y: validY, face: FACE_TYPES.WEST }))
+        .to.eql({ x: 0, y: validY, face: FACE_TYPES.WEST });
     });
   });
 })
