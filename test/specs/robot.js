@@ -5,7 +5,7 @@ import { expect } from 'chai';
 import Chance from 'chance';
 import FACE_TYPES from '../../src/faceTypes';
 import CONFIG from '../../src/config';
-import executeInput, { place, move } from '../../src/robot';
+import executeInput, { place, move, left, right, report } from '../../src/robot';
 
 const MIN_TEST_TIMES = 100;
 
@@ -144,6 +144,59 @@ describe('robot', () => {
 
       expect(move({ x: 0, y: validY, face: FACE_TYPES.WEST }))
         .to.eql({ x: 0, y: validY, face: FACE_TYPES.WEST });
+    });
+  });
+
+  describe('left', () => {
+
+    it('should return a state with new direction', () => {
+
+      const validX = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 1 });
+      const validY = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 1 });
+
+      expect(left({ x: validX, y: validY, face: FACE_TYPES.NORTH }))
+        .to.eql({ x: validX, y: validY, face: FACE_TYPES.WEST });
+
+      expect(left({ x: validX, y: validY, face: FACE_TYPES.WEST }))
+        .to.eql({ x: validX, y: validY, face: FACE_TYPES.SOUTH });
+
+      expect(left({ x: validX, y: validY, face: FACE_TYPES.SOUTH }))
+        .to.eql({ x: validX, y: validY, face: FACE_TYPES.EAST });
+
+      expect(left({ x: validX, y: validY, face: FACE_TYPES.EAST }))
+        .to.eql({ x: validX, y: validY, face: FACE_TYPES.NORTH });
+    });
+  });
+
+  describe('right', () => {
+
+    it('should return a state with new direction', () => {
+
+      const validX = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 1 });
+      const validY = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 1 });
+
+      expect(right({ x: validX, y: validY, face: FACE_TYPES.NORTH }))
+        .to.eql({ x: validX, y: validY, face: FACE_TYPES.EAST });
+
+      expect(right({ x: validX, y: validY, face: FACE_TYPES.EAST }))
+        .to.eql({ x: validX, y: validY, face: FACE_TYPES.SOUTH });
+
+      expect(right({ x: validX, y: validY, face: FACE_TYPES.SOUTH }))
+        .to.eql({ x: validX, y: validY, face: FACE_TYPES.WEST });
+
+      expect(right({ x: validX, y: validY, face: FACE_TYPES.WEST }))
+        .to.eql({ x: validX, y: validY, face: FACE_TYPES.NORTH });
+    });
+  });
+
+  describe('report', () => {
+
+    it('should not modify state', () => {
+      const validX = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 1 });
+      const validY = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 1 });
+      const validFace = chance.pickone(_.map(FACE_TYPES, (name, value) => value));
+      expect(report({ x: validX, y: validY, face: validFace }))
+        .to.eql({ x: validX, y: validY, face: validFace });
     });
   });
 })
