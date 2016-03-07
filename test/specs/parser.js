@@ -1,4 +1,5 @@
 
+import _ from 'lodash';
 import path from 'path';
 import { expect } from 'chai';
 
@@ -49,6 +50,17 @@ describe('parser', () => {
       ];
       return parseInput(EXAMPLE_C)
         .then(result => expect(result).to.eql(EXPECTED_ACTIONS));
+    });
+
+    it('should pass all possiable inputs', () => {
+      const INPUTS = path.resolve('test/cases/inputs');
+      const EXPECTED_ACTIONS = require(path.resolve('test/actions.json'));
+      return parseInput(INPUTS)
+        .then(actions => {
+          _.forEach(actions, (action, index) => {
+            expect(action).to.eql(EXPECTED_ACTIONS[index]);
+          });
+        });
     });
   });
 
