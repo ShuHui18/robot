@@ -39,7 +39,6 @@ export function reducer (previousState, action = {}) {
     case ACTION_TYPES.REPORT:
       return report(previousState);
     default:
-      // console.error(`invalid action type: ${action.type}`);
       return { ...previousState };
   }
 }
@@ -66,7 +65,6 @@ export function move (previousState) {
     case FACE_TYPES.WEST:
       return { x: _.max([ previousX - 1, 0 ]), y: previousY, face: previousFace };
     default:
-      // console.error(`invalid face: ${previousFace}`);
       return { ...previousState };
   }
 }
@@ -86,7 +84,6 @@ export function left (previousState) {
     case FACE_TYPES.WEST:
       return { x: previousX, y: previousY, face: FACE_TYPES.SOUTH };
     default:
-      // console.error(`invalid face: ${previousFace}`);
       return { ...previousState };
   }
 }
@@ -106,7 +103,6 @@ export function right (previousState) {
     case FACE_TYPES.WEST:
       return { x: previousX, y: previousY, face: FACE_TYPES.NORTH };
     default:
-      // console.error(`invalid face: ${previousFace}`);
       return { ...previousState };
   }
 }
