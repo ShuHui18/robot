@@ -30,7 +30,7 @@ export function parseToActions (inputStr = '') {
 }
 
 export function splitToLines (str) {
-  return _.chain(str.split('\n'))
+  return _.chain(str.split(/\r?\n/))
     .filter(line => !!line)
     .map(line => line.trim().toUpperCase())
     .value();
