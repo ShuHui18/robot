@@ -59,17 +59,13 @@ export function move (previousState) {
 
   switch (previousFace) {
     case FACE_TYPES.NORTH:
-      if (!_.inRange(previousY + 1, 0, TABLE_SIZE)) { return { ...previousState }; }
-      return { x: previousX, y: previousY + 1, face: previousFace };
+      return { x: previousX, y: _.min([ previousY + 1, TABLE_SIZE - 1 ]), face: previousFace };
     case FACE_TYPES.SOUTH:
-      if (!_.inRange(previousY - 1, 0, TABLE_SIZE)) { return { ...previousState }; }
-      return { x: previousX, y: previousY - 1, face: previousFace };
+      return { x: previousX, y: _.max([ previousY - 1, 0 ]), face: previousFace };
     case FACE_TYPES.EAST:
-      if (!_.inRange(previousX + 1, 0, TABLE_SIZE)) { return { ...previousState }; }
-      return { x: previousX + 1, y: previousY, face: previousFace };
+      return { x: _.min([ previousX + 1, TABLE_SIZE - 1 ]), y: previousY, face: previousFace };
     case FACE_TYPES.WEST:
-      if (!_.inRange(previousX - 1, 0, TABLE_SIZE)) { return { ...previousState }; }
-      return { x: previousX - 1, y: previousY, face: previousFace };
+      return { x: _.max([ previousX - 1, 0 ]), y: previousY, face: previousFace };
     default:
       console.error(`invalid face: ${previousFace}`);
       return { ...previousState };
