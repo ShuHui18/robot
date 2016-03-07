@@ -2,13 +2,15 @@
 import _ from 'lodash';
 import { parseInput } from './parser';
 import ACTION_TYPES from './actionTypes';
+import FACE_TYPES from './faceTypes';
 import CONFIG from './config';
+
 
 const TABLE_SIZE = CONFIG.TABLE_SIZE;
 
 export function executeInput (filePath) {
   return parseInput(filePath)
-    .then(commands => execute(commands));
+    .then(actions => execute(actions));
 }
 
 export function execute (actions) {
@@ -19,7 +21,7 @@ export function execute (actions) {
 export function reducer (previousState, action = {}) {
   switch (action.type) {
     case ACTION_TYPES.PLACE:
-      return place(action.x, action.y, action.face);
+      return place(previousState, action.x, action.y, action.face);
     case ACTION_TYPES.MOVE:
       return move(previousState);
     case ACTION_TYPES.LEFT:
@@ -33,59 +35,76 @@ export function reducer (previousState, action = {}) {
   }
 }
 
-export function place (x, y, face) {
+export function place (previousState, x, y, face) {
+  if (!_.inRange(x, 0, TABLE_SIZE)) { return { ...previousState }; }
+  if (!_.inRange(y, 0, TABLE_SIZE)) { return { ...previousState }; }
+  if (!FACE_TYPES[face]) { return { ...previousState }; }
   return { x, y, face };
 }
 
 export function move (previousState) {
-  let x = previousState.x;
-  let y = previousState.y;
-  let face = previousState.face;
-  switch (face) {
-    case 'NORTH':
-      return { x: x, y: y + 1 < TABLE_SIZE ? y + 1 : y, face: face };
-    case 'SOUTH':
-      return { x: x, y: y - 1 >= 0 ? y - 1 : 0, face: face };
-    case 'EAST':
-      return { x: x + 1 < TABLE_SIZE ? x + 1 : x, y: y, face: face };
-    case 'WEST':
-      return { x: x - 1 >= 0 ? x - 1 : x, y: y, face: face };
+  const previousX = previousState.x;
+  const previousY = previousState.y;
+  const previousFace = previousState.face;
+
+  switch (previousFace) {
+    case FACE_TYPES.NORTH:
+      if (!_.inRange(previousY + 1, 0, TABLE_SIZE)) { return { ...previousState }; }
+      return { x: previousX, y: previousY + 1, face: previousFace };
+    case FACE_TYPES.SOUTH:
+      if (!_.inRange(previousY - 1, 0, TABLE_SIZE)) { return { ...previousState }; }
+      return { x: previousX, y: previousY - 1, face: previousFace };
+    case FACE_TYPES.EAST:
+      if (!_.inRange(previousX + 1, 0, TABLE_SIZE)) { return { ...previousState }; }
+      return { x: previousX + 1, y: previousY, face: previousFace };
+    case FACE_TYPES.WEST:
+      if (!_.inRange(previousX - 1, 0, TABLE_SIZE)) { return { ...previousState }; }
+      return { x: previousX - 1, y: previousY, face: previousFace };
     default:
-      throw new Error(`invalid face: ${face}`);
+      return { ...previousState };
   }
 }
 
 export function left (previousState) {
-  switch (previousState.face) {
-    case 'NORTH':
-      return { x: previousState.x, y: previousState.y, face: 'WEST' };
-    case 'SOUTH':
-      return { x: previousState.x, y: previousState.y, face: 'EAST' };
-    case 'EAST':
-      return { x: previousState.x, y: previousState.y, face: 'NORTH' };
-    case 'WEST':
-      return { x: previousState.x, y: previousState.y, face: 'SOUTH' };
+  const previousX = previousState.x;
+  const previousY = previousState.y;
+  const previousFace = previousState.face;
+
+  switch (previousFace) {
+    case FACE_TYPES.NORTH:
+      return { x: previousX, y: previousY, face: FACE_TYPES.WEST };
+    case FACE_TYPES.SOUTH:
+      return { x: previousX, y: previousY, face: FACE_TYPES.EAST };
+    case FACE_TYPES.EAST:
+      return { x: previousX, y: previousY, face: FACE_TYPES.NORTH };
+    case FACE_TYPES.WEST:
+      return { x: previousX, y: previousY, face: FACE_TYPES.SOUTH };
     default:
-      throw new Error(`invalid face: ${previousState.face}`);
+      throw new Error(`invalid face: ${previousFace}`);
+      return { ...previousState };
   }
 }
 
 export function right (previousState) {
-  switch (previousState.face) {
-    case 'NORTH':
-      return { x: previousState.x, y: previousState.y, face: 'EAST' };
-    case 'SOUTH':
-      return { x: previousState.x, y: previousState.y, face: 'WEST' };
-    case 'EAST':
-      return { x: previousState.x, y: previousState.y, face: 'SOUTH' };
-    case 'WEST':
-      return { x: previousState.x, y: previousState.y, face: 'NORTH' };
+  const previousX = previousState.x;
+  const previousY = previousState.y;
+  const previousFace = previousState.face;
+
+  switch (previousFace) {
+    case FACE_TYPES.NORTH:
+      return { x: previousX, y: previousY, face: FACE_TYPES.EAST };
+    case FACE_TYPES.SOUTH:
+      return { x: previousX, y: previousY, face: FACE_TYPES.WEST };
+    case FACE_TYPES.EAST:
+      return { x: previousX, y: previousY, face: FACE_TYPES.SOUTH };
+    case FACE_TYPES.WEST:
+      return { x: previousX, y: previousY, face: FACE_TYPES.NORTH };
     default:
-      throw new Error(`invalid face: ${previousState.face}`);
+      throw new Error(`invalid face: ${previousFace}`);
   }
 }
 
 export function report (previousState) {
   console.log(previousState);
-  return previousState;
+  return { ...previousState };
 }
