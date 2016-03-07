@@ -28,7 +28,7 @@ describe('robot', () => {
     it('should pass example a', () => {
       const EXAMPLE_A = path.resolve('test/cases/example-a');
       const EXPECTED_OUTPUT_A = '0,1,NORTH';
-      
+
       return executeInput(EXAMPLE_A)
         .then(result => expect(result).to.eql(EXPECTED_OUTPUT_A));
     });
@@ -54,6 +54,30 @@ describe('robot', () => {
       const EXPECTED_OUTPUT = '3,4,WEST';
 
       return executeInput(INPUTS)
+        .then(result => expect(result).to.eql(EXPECTED_OUTPUT));
+    });
+
+    it('should pass case 10', () => {
+      const CASE_10 = path.resolve('test/cases/case-10');
+      const EXPECTED_OUTPUT = '3,1,SOUTH';
+
+      return executeInput(CASE_10)
+        .then(result => expect(result).to.eql(EXPECTED_OUTPUT));
+    });
+
+    it('should pass case 20', () => {
+      const CASE_20 = path.resolve('test/cases/case-20');
+      const EXPECTED_OUTPUT = '4,4,NORTH';
+
+      return executeInput(CASE_20)
+        .then(result => expect(result).to.eql(EXPECTED_OUTPUT));
+    });
+
+    it('should pass case 100', () => {
+      const CASE_100 = path.resolve('test/cases/case-100');
+      const EXPECTED_OUTPUT = '2,4,NORTH';
+
+      return executeInput(CASE_100)
         .then(result => expect(result).to.eql(EXPECTED_OUTPUT));
     });
   });

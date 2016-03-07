@@ -1,6 +1,9 @@
 
+import _ from 'lodash';
 import fs from 'fs';
+import Chance from 'chance';
 import CONFIG from '../../src/config';
+import FACE_TYPES from '../../src/faceTypes';
 
 const TABLE_SIZE = CONFIG.TABLE_SIZE;
 
@@ -39,5 +42,34 @@ describe('utils', () => {
     actions.push({ type: 'RIGHT' });
     actions.push({ type: 'REPORT' });
     console.log(JSON.stringify(actions));
+  });
+
+  it('should show a random test case', () => {
+
+    const CASE_SIZE = 100;
+
+    let chance = new Chance();
+
+    let genPlace = () => {
+      const VALID_X = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 1 });
+      const VALID_Y = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 1 });
+      const VALID_FACE = chance.pickone(_.map(FACE_TYPES, (name, value) => value));
+      return `PLACE ${VALID_X},${VALID_Y},${VALID_FACE}`;
+    };
+
+    let genMove = () => 'MOVE';
+    let genLeft = () => 'LEFT';
+    let genRight = () => 'RIGHT';
+    let genReport = () => 'REPORT';
+
+    for (let i = 0; i < CASE_SIZE; i++) {
+      let getInput;
+      if (i >= CASE_SIZE - 20) {
+        getInput = chance.pickone([ genMove, genLeft, genRight, genReport ]);
+      } else {
+        getInput = chance.pickone([ genPlace, genMove, genLeft, genRight, genReport ]);
+      }
+      console.log(getInput());
+    }
   });
 });
