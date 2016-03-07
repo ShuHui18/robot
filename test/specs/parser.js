@@ -16,7 +16,7 @@ describe('parser', () => {
 
   describe('parseInput', () => {
 
-    it('should pass example a', () => {
+    it('should parse example a', () => {
       const EXAMPLE_A = path.resolve('test/cases/example-a');
       const EXPECTED_ACTIONS = [
         { type: 'PLACE', x: 0, y: 0, face: 'NORTH' },
@@ -27,7 +27,7 @@ describe('parser', () => {
         .then(result => expect(result).to.eql(EXPECTED_ACTIONS));
     });
 
-    it('should pass example b', () => {
+    it('should parse example b', () => {
       const EXAMPLE_B = path.resolve('test/cases/example-b');
       const EXPECTED_ACTIONS = [
         { type: 'PLACE', x: 0, y: 0, face: 'NORTH' },
@@ -38,7 +38,7 @@ describe('parser', () => {
         .then(result => expect(result).to.eql(EXPECTED_ACTIONS));
     });
 
-    it('should pass example c', () => {
+    it('should parse example c', () => {
       const EXAMPLE_C = path.resolve('test/cases/example-c');
       const EXPECTED_ACTIONS = [
         { type: 'PLACE', x: 1, y: 2, face: 'EAST' },
@@ -52,11 +52,12 @@ describe('parser', () => {
         .then(result => expect(result).to.eql(EXPECTED_ACTIONS));
     });
 
-    it('should pass all possiable inputs', () => {
+    it('should parse all possiable inputs', () => {
       const INPUTS = path.resolve('test/cases/inputs');
       const EXPECTED_ACTIONS = require(path.resolve('test/actions.json'));
       return parseInput(INPUTS)
         .then(actions => {
+          expect(actions).to.have.length(EXPECTED_ACTIONS.length);
           _.forEach(actions, (action, index) => {
             expect(action).to.eql(EXPECTED_ACTIONS[index]);
           });
