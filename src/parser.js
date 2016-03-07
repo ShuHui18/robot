@@ -24,7 +24,7 @@ export function parseToActions (inputStr = '') {
     if (_.startsWith(str, ACTION_TYPES.PLACE)) { return parsePlaceAction(str); }
     if (_.startsWith(str, ACTION_TYPES.MOVE)) { return parseMoveAction(str); }
     if (_.startsWith(str, ACTION_TYPES.LEFT)) { return parseLeftAction(str); }
-    if (_.startsWith(str, ACTION_TYPES.MOVE)) { return parseRightAction(str); }
+    if (_.startsWith(str, ACTION_TYPES.RIGHT)) { return parseRightAction(str); }
     if (_.startsWith(str, ACTION_TYPES.REPORT)) { return parseReportAction(str); }
   });
 }
