@@ -1,6 +1,6 @@
 
 import _ from 'lodash';
-import { parseInput } from './parser';
+import parseInput from './parser';
 import ACTION_TYPES from './actionTypes';
 import FACE_TYPES from './faceTypes';
 import CONFIG from './config';

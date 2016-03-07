@@ -5,7 +5,7 @@ import Promise from 'bluebird';
 import ACTION_TYPES from './actionTypes';
 import CONFIG from './config';
 
-export function parseInput (filePath) {
+export default function parseInput (filePath) {
   return readInput(filePath)
     .then(data => parseToActions(data));
 }
