@@ -2,6 +2,8 @@
 import fs from 'fs';
 import _ from 'lodash';
 import Promise from 'bluebird';
+import ACTION_TYPES from './actionTypes';
+import CONFIG from './config';
 
 export function parseInput (filePath) {
   return readInput(filePath)
@@ -19,11 +21,11 @@ export function readInput (filePath) {
 
 export function parseToCommands (inputStr = '') {
   return _.map(splitToCommands(inputStr), str => {
-    if (_.startsWith(str, 'PLACE')) { return parsePlace(str); }
-    if (_.startsWith(str, 'MOVE')) { return parseMove(str); }
-    if (_.startsWith(str, 'LEFT')) { return parseLeft(str); }
-    if (_.startsWith(str, 'MOVE')) { return parseRight(str); }
-    if (_.startsWith(str, 'REPORT')) { return parseReport(str); }
+    if (_.startsWith(str, ACTION_TYPES.PLACE)) { return parsePlace(str); }
+    if (_.startsWith(str, ACTION_TYPES.MOVE)) { return parseMove(str); }
+    if (_.startsWith(str, ACTION_TYPES.LEFT)) { return parseLeft(str); }
+    if (_.startsWith(str, ACTION_TYPES.MOVE)) { return parseRight(str); }
+    if (_.startsWith(str, ACTION_TYPES.REPORT)) { return parseReport(str); }
   });
 }
 
@@ -36,21 +38,21 @@ export function splitToCommands (str) {
 
 export function parsePlace (str) {
   let values = str.split(' ')[1].split(',');
-  return { command: 'PLACE', x: values[0], y: values[1], f: values[2] };
+  return { type: ACTION_TYPES.PLACE, x: parseInt(values[0]), y: parseInt(values[1]), face: values[2] };
 }
 
 export function parseMove (str) {
-  return { command: 'MOVE' };
+  return { type: ACTION_TYPES.MOVE };
 }
 
 export function parseLeft (str) {
-  return { command: 'LEFT' };
+  return { type: ACTION_TYPES.LEFT };
 }
 
 export function parseRight (str) {
-  return { command: 'RIGHT' };
+  return { type: ACTION_TYPES.RIGHT };
 }
 
 export function parseReport (str) {
-  return { command: 'REPORT' };
+  return { type: ACTION_TYPES.REPORT };
 }
