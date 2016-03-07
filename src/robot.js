@@ -10,12 +10,17 @@ const TABLE_SIZE = CONFIG.TABLE_SIZE;
 
 export function executeInput (filePath) {
   return parseInput(filePath)
-    .then(actions => execute(actions));
+    .then(actions => execute(actions))
+    .then(result => formatOutput(result));
 }
 
 export function execute (actions) {
   const initialState = null;
   return _.reduce(actions, (state, action) => reducer(state, action), initialState);
+}
+
+export function formatOutput (state) {
+  return `${state.x},${state.y},${state.face}`.toUpperCase();
 }
 
 export function reducer (previousState, action = {}) {
@@ -108,6 +113,6 @@ export function right (previousState) {
 }
 
 export function report (previousState) {
-  console.log(previousState);
+  console.log(formatOutput(previousState));
   return { ...previousState };
 }
