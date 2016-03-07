@@ -7,7 +7,7 @@ import CONFIG from './config';
 
 export function parseInput (filePath) {
   return readInput(filePath)
-    .then(data => parseToCommands(data));
+    .then(data => parseToActions(data));
 }
 
 export function readInput (filePath) {
@@ -19,40 +19,40 @@ export function readInput (filePath) {
   });
 }
 
-export function parseToCommands (inputStr = '') {
-  return _.map(splitToCommands(inputStr), str => {
-    if (_.startsWith(str, ACTION_TYPES.PLACE)) { return parsePlace(str); }
-    if (_.startsWith(str, ACTION_TYPES.MOVE)) { return parseMove(str); }
-    if (_.startsWith(str, ACTION_TYPES.LEFT)) { return parseLeft(str); }
-    if (_.startsWith(str, ACTION_TYPES.MOVE)) { return parseRight(str); }
-    if (_.startsWith(str, ACTION_TYPES.REPORT)) { return parseReport(str); }
+export function parseToActions (inputStr = '') {
+  return _.map(splitToLines(inputStr), str => {
+    if (_.startsWith(str, ACTION_TYPES.PLACE)) { return parsePlaceAction(str); }
+    if (_.startsWith(str, ACTION_TYPES.MOVE)) { return parseMoveAction(str); }
+    if (_.startsWith(str, ACTION_TYPES.LEFT)) { return parseLeftAction(str); }
+    if (_.startsWith(str, ACTION_TYPES.MOVE)) { return parseRightAction(str); }
+    if (_.startsWith(str, ACTION_TYPES.REPORT)) { return parseReportAction(str); }
   });
 }
 
-export function splitToCommands (str) {
+export function splitToLines (str) {
   return _.chain(str.split('\n'))
-    .filter(command => !!command)
-    .map(command => command.trim().toUpperCase())
+    .filter(line => !!line)
+    .map(line => line.trim().toUpperCase())
     .value();
 }
 
-export function parsePlace (str) {
+export function parsePlaceAction (str) {
   let values = str.split(' ')[1].split(',');
   return { type: ACTION_TYPES.PLACE, x: parseInt(values[0]), y: parseInt(values[1]), face: values[2] };
 }
 
-export function parseMove (str) {
+export function parseMoveAction (str) {
   return { type: ACTION_TYPES.MOVE };
 }
 
-export function parseLeft (str) {
+export function parseLeftAction (str) {
   return { type: ACTION_TYPES.LEFT };
 }
 
-export function parseRight (str) {
+export function parseRightAction (str) {
   return { type: ACTION_TYPES.RIGHT };
 }
 
-export function parseReport (str) {
+export function parseReportAction (str) {
   return { type: ACTION_TYPES.REPORT };
 }
