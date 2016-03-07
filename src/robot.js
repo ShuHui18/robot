@@ -8,7 +8,7 @@ import CONFIG from './config';
 
 const TABLE_SIZE = CONFIG.TABLE_SIZE;
 
-export function executeInput (filePath) {
+export default function executeInput (filePath) {
   return parseInput(filePath)
     .then(actions => execute(actions))
     .then(result => formatOutput(result));
