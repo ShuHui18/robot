@@ -6,7 +6,7 @@ import Chance from 'chance';
 import deepFreeze from 'deep-freeze-node';
 import FACE_TYPES from '../../src/faceTypes';
 import CONFIG from '../../src/config';
-import executeInput, { place, move, left, right, report } from '../../src/robot';
+import executeInput, { place, move, left, right, report, formatOutput } from '../../src/robot';
 
 const MIN_TEST_TIMES = 100;
 
@@ -212,6 +212,13 @@ describe('robot', () => {
       const expectedState = { x: validX, y: validY, face: validFace };
 
       expect(report(previousState)).to.eql(expectedState);
+    });
+  });
+
+  describe('formatOutput', () => {
+
+    it('should return valid string output', () => {
+      expect(formatOutput({ x: 1, y: 2, face: FACE_TYPES.NORTH })).to.eql('1,2,NORTH');
     });
   });
 })
