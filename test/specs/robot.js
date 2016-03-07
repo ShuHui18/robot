@@ -3,6 +3,7 @@ import _ from 'lodash';
 import path from 'path';
 import { expect } from 'chai';
 import Chance from 'chance';
+import deepFreeze from 'deep-freeze-node';
 import FACE_TYPES from '../../src/faceTypes';
 import CONFIG from '../../src/config';
 import executeInput, { place, move, left, right, report } from '../../src/robot';
@@ -50,44 +51,48 @@ describe('robot', () => {
 
     it('should return a new state if the inputs are valid', () => {
       for(let i = 0; i < MIN_TEST_TIMES; i++) {
-        const previousState = { x: 0, y: 0, face: FACE_TYPES.NORTH };
         const validX = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 1 });
         const validY = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 1 });
         const validFace = chance.pickone(_.map(FACE_TYPES, (name, value) => value));
-        expect(place(previousState, validX, validY, validFace)).to.eql({ x: validX, y: validY, face: validFace });
-        expect(previousState).to.eql({ x: 0, y: 0, face: FACE_TYPES.NORTH });
+        const previousState = { x: 0, y: 0, face: FACE_TYPES.NORTH };
+        const expectedState = { x: validX, y: validY, face: validFace };
+
+        expect(place(previousState, validX, validY, validFace)).to.eql(expectedState);
       }
     });
 
     it('should return the previous state if x is not a valid position', () => {
-      const previousState = { x: 0, y: 0, face: FACE_TYPES.NORTH };
       const validY = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 1 });
       const validFace = chance.pickone(_.map(FACE_TYPES, (name, value) => value));
+      const previousState = { x: 0, y: 0, face: FACE_TYPES.NORTH };
+      const expectedState = { x: 0, y: 0, face: FACE_TYPES.NORTH };
 
-      expect(place(previousState, -1, validY, validFace)).to.eql(previousState);
-      expect(place(previousState, CONFIG.TABLE_SIZE, validY, validFace)).to.eql(previousState);
-      expect(place(previousState, CONFIG.TABLE_SIZE + 1, validY, validFace)).to.eql(previousState);
+      expect(place(previousState, -1, validY, validFace)).to.eql(expectedState);
+      expect(place(previousState, CONFIG.TABLE_SIZE, validY, validFace)).to.eql(expectedState);
+      expect(place(previousState, CONFIG.TABLE_SIZE + 1, validY, validFace)).to.eql(expectedState);
     });
 
     it('should return the previous state if y is not a valid position', () => {
-      const previousState = { x: 0, y: 0, face: FACE_TYPES.NORTH };
       const validX = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 1 });
       const validFace = chance.pickone(_.map(FACE_TYPES, (name, value) => value));
+      const previousState = { x: 0, y: 0, face: FACE_TYPES.NORTH };
+      const expectedState = { x: 0, y: 0, face: FACE_TYPES.NORTH };
 
-      expect(place(previousState, validX, -1, validFace)).to.eql(previousState);
-      expect(place(previousState, validX, CONFIG.TABLE_SIZE, validFace)).to.eql(previousState);
-      expect(place(previousState, validX, CONFIG.TABLE_SIZE + 1, validFace)).to.eql(previousState);
+      expect(place(previousState, validX, -1, validFace)).to.eql(expectedState);
+      expect(place(previousState, validX, CONFIG.TABLE_SIZE, validFace)).to.eql(expectedState);
+      expect(place(previousState, validX, CONFIG.TABLE_SIZE + 1, validFace)).to.eql(expectedState);
     });
 
     it('should return the previous state if face is not a valid direction', () => {
-      const previousState = { x: 0, y: 0, face: FACE_TYPES.NORTH };
       const validX = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 1 });
       const validY = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 1 });
+      const previousState = { x: 0, y: 0, face: FACE_TYPES.NORTH };
+      const expectedState = { x: 0, y: 0, face: FACE_TYPES.NORTH };
 
-      expect(place(previousState, validX, validY, FACE_TYPES.NORTH.toLowerCase())).to.eql(previousState);
-      expect(place(previousState, validX, validY, '')).to.eql(previousState);
-      expect(place(previousState, validX, validY, null)).to.eql(previousState);
-      expect(expect(place(previousState, validX, validY, undefined)).to.eql(previousState));
+      expect(place(previousState, validX, validY, FACE_TYPES.NORTH.toLowerCase())).to.eql(expectedState);
+      expect(place(previousState, validX, validY, '')).to.eql(expectedState);
+      expect(place(previousState, validX, validY, null)).to.eql(expectedState);
+      expect(place(previousState, validX, validY, undefined)).to.eql(expectedState);
     });
   });
 
@@ -98,7 +103,9 @@ describe('robot', () => {
         const validX = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 1 });
         const validY = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 2 });
         const previousState = { x: validX, y: validY, face: FACE_TYPES.NORTH };
-        expect(move(previousState)).to.eql({ x: validX, y: validY + 1, face: FACE_TYPES.NORTH });
+        const expectedState = { x: validX, y: validY + 1, face: FACE_TYPES.NORTH };
+
+        expect(move(previousState)).to.eql(expectedState);
       }
     });
 
@@ -107,7 +114,9 @@ describe('robot', () => {
         const validX = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 2 });
         const validY = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 1 });
         const previousState = { x: validX, y: validY, face: FACE_TYPES.EAST };
-        expect(move(previousState)).to.eql({ x: validX + 1, y: validY, face: FACE_TYPES.EAST });
+        const expectedState = { x: validX + 1, y: validY, face: FACE_TYPES.EAST };
+
+        expect(move(previousState)).to.eql(expectedState);
       }
     });
 
@@ -116,7 +125,9 @@ describe('robot', () => {
         const validX = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 1 });
         const validY = chance.integer({ min: 0 + 1, max: CONFIG.TABLE_SIZE - 1 });
         const previousState = { x: validX, y: validY, face: FACE_TYPES.SOUTH };
-        expect(move(previousState)).to.eql({ x: validX, y: validY - 1, face: FACE_TYPES.SOUTH });
+        const expectedState = { x: validX, y: validY - 1, face: FACE_TYPES.SOUTH };
+
+        expect(move(previousState)).to.eql(expectedState);
       }
     });
 
@@ -125,7 +136,9 @@ describe('robot', () => {
         const validX = chance.integer({ min: 0 + 1, max: CONFIG.TABLE_SIZE - 1 });
         const validY = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 1 });
         const previousState = { x: validX, y: validY, face: FACE_TYPES.WEST };
-        expect(move(previousState)).to.eql({ x: validX - 1, y: validY, face: FACE_TYPES.WEST });
+        const expectedState = { x: validX - 1, y: validY, face: FACE_TYPES.WEST };
+
+        expect(move(previousState)).to.eql(expectedState);
       }
     });
 
@@ -195,8 +208,10 @@ describe('robot', () => {
       const validX = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 1 });
       const validY = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 1 });
       const validFace = chance.pickone(_.map(FACE_TYPES, (name, value) => value));
-      expect(report({ x: validX, y: validY, face: validFace }))
-        .to.eql({ x: validX, y: validY, face: validFace });
+      const previousState = { x: validX, y: validY, face: validFace };
+      const expectedState = { x: validX, y: validY, face: validFace };
+
+      expect(report(previousState)).to.eql(expectedState);
     });
   });
 })

@@ -4,6 +4,7 @@ import { parseInput } from './parser';
 import ACTION_TYPES from './actionTypes';
 import FACE_TYPES from './faceTypes';
 import CONFIG from './config';
+import deepFreeze from 'deep-freeze-node';
 
 
 const TABLE_SIZE = CONFIG.TABLE_SIZE;
@@ -24,6 +25,9 @@ export function formatOutput (state) {
 }
 
 export function reducer (previousState, action = {}) {
+  deepFreeze(previousState);
+  deepFreeze(action);
+
   switch (action.type) {
     case ACTION_TYPES.PLACE:
       return place(previousState, action.x, action.y, action.face);
