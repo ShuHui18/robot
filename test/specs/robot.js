@@ -8,7 +8,7 @@ import FACE_TYPES from '../../src/faceTypes';
 import CONFIG from '../../src/config';
 import executeInput, { place, move, left, right, report, formatOutput } from '../../src/robot';
 
-const MIN_TEST_TIMES = 100;
+const MIN_TEST_TIMES = 1000;
 
 let chance = new Chance();
 
@@ -18,23 +18,30 @@ describe('robot', () => {
 
     it('should pass example a', () => {
       const EXAMPLE_A = path.resolve('test/cases/example-a');
-      const EXPECT_OUTPUT_A = '0,1,NORTH';
+      const EXPECTED_OUTPUT_A = '0,1,NORTH';
       return executeInput(EXAMPLE_A)
-        .then(result => expect(result).to.eql(EXPECT_OUTPUT_A));
+        .then(result => expect(result).to.eql(EXPECTED_OUTPUT_A));
     });
 
     it('should pass example b', () => {
       const EXAMPLE_B = path.resolve('test/cases/example-b');
-      const EXPECT_OUTPUT_B = '0,0,WEST';
+      const EXPECTED_OUTPUT_B = '0,0,WEST';
       return executeInput(EXAMPLE_B)
-        .then(result => expect(result).to.eql(EXPECT_OUTPUT_B));
+        .then(result => expect(result).to.eql(EXPECTED_OUTPUT_B));
     });
 
     it('should pass example c', () => {
       const EXAMPLE_C = path.resolve('test/cases/example-c');
-      const EXPECT_OUTPUT_C = '3,3,NORTH';
+      const EXPECTED_OUTPUT_C = '3,3,NORTH';
       return executeInput(EXAMPLE_C)
-        .then(result => expect(result).to.eql(EXPECT_OUTPUT_C));
+        .then(result => expect(result).to.eql(EXPECTED_OUTPUT_C));
+    });
+
+    it('should pass all inputs', () => {
+      const INPUTS = path.resolve('test/cases/inputs');
+      const EXPECTED_OUTPUT = '3,4,WEST';
+      return executeInput(INPUTS)
+        .then(result => expect(result).to.eql(EXPECTED_OUTPUT));
     });
   });
 
@@ -49,6 +56,17 @@ describe('robot', () => {
         const EXPECTED_STATE = { x: VALID_X, y: VALID_Y, face: VALID_FACE };
 
         expect(place(PREVIOUS_STATE, VALID_X, VALID_Y, VALID_FACE)).to.eql(EXPECTED_STATE);
+      }
+    });
+
+    it('should place on table if robot are placing on the table', () => {
+      for(let i = 0; i < MIN_TEST_TIMES; i++) {
+        const VALID_X = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 1 });
+        const VALID_Y = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 1 });
+        const VALID_FACE = chance.pickone(_.map(FACE_TYPES, (name, value) => value));
+        const EXPECTED_STATE = { x: VALID_X, y: VALID_Y, face: VALID_FACE };
+
+        expect(place({}, VALID_X, VALID_Y, VALID_FACE)).to.eql(EXPECTED_STATE);
       }
     });
 
@@ -89,7 +107,7 @@ describe('robot', () => {
 
   describe('move', () => {
 
-    it('should +1 on Y when face on North', () => {
+    it('should +1 on Y when facing North', () => {
       for(let i = 0; i < MIN_TEST_TIMES; i++) {
         const VALID_X = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 1 });
         const VALID_Y = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 2 });
@@ -100,7 +118,7 @@ describe('robot', () => {
       }
     });
 
-    it('should +1 on X when face on East', () => {
+    it('should +1 on X when facing East', () => {
       for(let i = 0; i < MIN_TEST_TIMES; i++) {
         const VALID_X = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 2 });
         const VALID_Y = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 1 });
@@ -111,7 +129,7 @@ describe('robot', () => {
       }
     });
 
-    it('should -1 on Y when face on South', () => {
+    it('should -1 on Y when facing South', () => {
       for(let i = 0; i < MIN_TEST_TIMES; i++) {
         const VALID_X = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 1 });
         const VALID_Y = chance.integer({ min: 0 + 1, max: CONFIG.TABLE_SIZE - 1 });
@@ -122,7 +140,7 @@ describe('robot', () => {
       }
     });
 
-    it('should -1 on X when face on West', () => {
+    it('should -1 on X when facing West', () => {
       for(let i = 0; i < MIN_TEST_TIMES; i++) {
         const VALID_X = chance.integer({ min: 0 + 1, max: CONFIG.TABLE_SIZE - 1 });
         const VALID_Y = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 1 });
@@ -133,21 +151,48 @@ describe('robot', () => {
       }
     });
 
-    it('should not move outside of the table ', () => {
+    it('should not move outside of the table when facing North', () => {
       const VALID_X = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 1 });
-      const VALID_Y = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 1 });
 
       expect(move({ x: VALID_X, y: CONFIG.TABLE_SIZE - 1, face: FACE_TYPES.NORTH }))
         .to.eql({ x: VALID_X, y: CONFIG.TABLE_SIZE - 1, face: FACE_TYPES.NORTH });
 
-      expect(move({ x: VALID_X, y: 0, face: FACE_TYPES.SOUTH }))
-        .to.eql({ x: VALID_X, y: 0, face: FACE_TYPES.SOUTH });
+      expect(move({ x: VALID_X, y: CONFIG.TABLE_SIZE, face: FACE_TYPES.NORTH }))
+        .to.eql({ x: VALID_X, y: CONFIG.TABLE_SIZE - 1, face: FACE_TYPES.NORTH });
+    });
+
+    it('should not move outside of the table when facing East', () => {
+      const VALID_Y = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 1 });
 
       expect(move({ x: CONFIG.TABLE_SIZE - 1, y: VALID_Y, face: FACE_TYPES.EAST }))
         .to.eql({ x: CONFIG.TABLE_SIZE - 1, y: VALID_Y, face: FACE_TYPES.EAST });
 
+      expect(move({ x: CONFIG.TABLE_SIZE, y: VALID_Y, face: FACE_TYPES.EAST }))
+        .to.eql({ x: CONFIG.TABLE_SIZE - 1, y: VALID_Y, face: FACE_TYPES.EAST });
+    });
+
+    it('should not move outside of the table when facing South', () => {
+      const VALID_X = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 1 });
+
+      expect(move({ x: VALID_X, y: 0, face: FACE_TYPES.SOUTH }))
+        .to.eql({ x: VALID_X, y: 0, face: FACE_TYPES.SOUTH });
+
+      expect(move({ x: VALID_X, y: -1, face: FACE_TYPES.SOUTH }))
+        .to.eql({ x: VALID_X, y: 0, face: FACE_TYPES.SOUTH });
+    });
+
+    it('should not move outside of the table when facing West', () => {
+      const VALID_Y = chance.integer({ min: 0, max: CONFIG.TABLE_SIZE - 1 });
+
       expect(move({ x: 0, y: VALID_Y, face: FACE_TYPES.WEST }))
         .to.eql({ x: 0, y: VALID_Y, face: FACE_TYPES.WEST });
+
+      expect(move({ x: -1, y: VALID_Y, face: FACE_TYPES.WEST }))
+        .to.eql({ x: 0, y: VALID_Y, face: FACE_TYPES.WEST });
+    });
+
+    it('should return the previous state if robot not placing on the table', () => {
+      expect(move({})).to.eql({});
     });
   });
 
@@ -170,6 +215,10 @@ describe('robot', () => {
       expect(left({ x: VALID_X, y: VALID_Y, face: FACE_TYPES.EAST }))
         .to.eql({ x: VALID_X, y: VALID_Y, face: FACE_TYPES.NORTH });
     });
+
+    it('should return the previous state if robot not placing on the table', () => {
+      expect(left({})).to.eql({});
+    });
   });
 
   describe('right', () => {
@@ -191,6 +240,10 @@ describe('robot', () => {
       expect(right({ x: VALID_X, y: VALID_Y, face: FACE_TYPES.WEST }))
         .to.eql({ x: VALID_X, y: VALID_Y, face: FACE_TYPES.NORTH });
     });
+
+    it('should return the previous state if robot not placing on the table', () => {
+      expect(right({})).to.eql({});
+    });
   });
 
   describe('report', () => {
@@ -204,6 +257,10 @@ describe('robot', () => {
 
       expect(report(PREVIOUS_STATE)).to.eql(EXPECTED_STATE);
     });
+
+    it('should return the previous state if not placing on the table', () => {
+      expect(report({})).to.eql({});
+    });
   });
 
   describe('formatOutput', () => {
@@ -211,7 +268,7 @@ describe('robot', () => {
     it('should return valid string output', () => {
       const STATE = { x: 1, y: 2, face: FACE_TYPES.NORTH };
       const EXPECTED = '1,2,NORTH';
-      
+
       expect(formatOutput(STATE)).to.eql(EXPECTED);
     });
   });
