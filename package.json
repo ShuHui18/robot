@@ -1,15 +1,16 @@
 {
   "name": "robot",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "",
   "main": "index.js",
   "directories": {
     "test": "test"
   },
   "scripts": {
+    "start": "node .",
     "test": "mocha 'test/specs/**/*.js' --compilers js:babel-core/register"
   },
-  "author": "",
+  "author": "Shengzhou Zhang",
   "license": "ISC",
   "devDependencies": {
     "chai": "^3.5.0",
